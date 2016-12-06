@@ -40,9 +40,9 @@ public extension UIImage {
     ///
     /// - parameter name: The preferred icon name.
     /// - parameter textColor: The text color.
-    /// - parameter size: The image size.
+    /// - parameter size: The image size. The font is sized to fit the smallest dimension.
     /// - parameter backgroundColor: The background color (optional).
-    /// - returns: A string that will appear as icon with Ionicons
+    /// - returns: An image with the rendered icon character
     public static func ionicon(with name: Ionicons, textColor: UIColor, size: CGSize, backgroundColor: UIColor = UIColor.clear) -> UIImage {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = NSTextAlignment.center
@@ -55,6 +55,35 @@ public extension UIImage {
         return image!
     }
 
+    /// Get a Ionicons image with the given icon name, text color, size and an optional background color.
+    ///
+    /// - parameter name: The preferred icon name.
+    /// - parameter textColor: The text color.
+    /// - parameter imageSize: The image size.
+    /// - parameter fontSize: The font size. Icon will clip if it is larger than the image size.
+    /// - parameter backgroundColor: The background color (optional).
+    /// - returns: An image with the rendered icon character
+    public static func ionicon(with name: Ionicons,
+                               textColor: UIColor,
+                               imageSize: CGSize,
+                               fontSize: CGFloat,
+                               backgroundColor: UIColor = UIColor.clear) -> UIImage {
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = NSTextAlignment.center
+        let fontSize = fontSize
+        let attributedString = NSAttributedString(string: String.ionicon(with: name), attributes: [NSFontAttributeName: UIFont.ionicon(of: fontSize), NSForegroundColorAttributeName: textColor, NSBackgroundColorAttributeName: backgroundColor, NSParagraphStyleAttributeName: paragraph])
+        
+        let format = UIGraphicsImageRendererFormat()
+        let renderer = UIGraphicsImageRenderer(size: imageSize, format: format)
+        
+        let rect = CGRect(x: 0, y: (imageSize.height - fontSize) / 2, width: imageSize.width, height: fontSize)
+        
+        let icon = renderer.image { ctx in
+            attributedString.draw(in: rect)
+        }
+        
+        return icon
+    }
 }
 
 // MARK: - Private
